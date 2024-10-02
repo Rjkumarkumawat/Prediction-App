@@ -26,19 +26,17 @@ if not pd.api.types.is_numeric_dtype(y):
 # Split data into training and testing sets
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-
+# Create the ANN model
 model = Sequential()
 model.add(Dense(units=64, activation='relu', input_dim=1))
 model.add(Dense(units=1, activation='sigmoid'))
 
+# Compile the model
 model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 
-
+# Train the model with EarlyStopping
 early_stopping = EarlyStopping(monitor='val_loss', patience=5)
-
 model.fit(X_train, y_train, epochs=100, batch_size=32, validation_data=(X_test, y_test), callbacks=[early_stopping])
-
-
 
 def main():
     st.title("Prediction App")
@@ -49,9 +47,12 @@ def main():
     if st.button("Predict"):
         new_data = np.array([new_data]).reshape(-1, 1)
         prediction = model.predict(new_data)
+
+        # Calculate accuracy on the testing set (assuming your model is for classification)
+        loss, accuracy = model.evaluate(X_test, y_test)
+
         st.success(f"Prediction: {prediction[0][0]}")
+        st.write(f"Model Accuracy: {accuracy:.2f}")  # Display accuracy with two decimal places
 
 if __name__ == "__main__":
     main()
-
-
